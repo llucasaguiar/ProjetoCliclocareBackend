@@ -1,6 +1,6 @@
 # CicloCare API - Backend Spring Boot
 
-## 📋 Descrição
+## Descrição
 
 Backend completo em Spring Boot para o sistema de acompanhamento do ciclo menstrual feminino - **CicloCare**.
 
