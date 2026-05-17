@@ -1,7 +1,9 @@
 package com.ciclocare.controller;
 
+import com.ciclocare.dto.request.RegisterRequest;
 import com.ciclocare.dto.request.UpdateProfileRequest;
 import com.ciclocare.dto.response.ApiResponse;
+import com.ciclocare.entity.Usuario;
 import com.ciclocare.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,26 @@ import java.util.UUID;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+
+	@PostMapping("/cadastro1")
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<ApiResponse> cadastrar(
+			@Valid @RequestBody RegisterRequest registerRequest
+			) 	{
+		try {
+			var usuaria = usuarioService.registrar(registerRequest);
+
+			return ResponseEntity
+					.status(HttpStatus.CREATED)
+					.body(ApiResponse.sucesso(
+							"Usuária cadastrada com sucesso!", usuaria
+					));
+		} catch (Exception e) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body(ApiResponse.erro(e.getMessage()));
+		}
+	}
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> buscarPorId(@PathVariable UUID id) {
