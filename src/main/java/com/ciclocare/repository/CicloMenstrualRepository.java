@@ -16,7 +16,7 @@ public interface CicloMenstrualRepository extends JpaRepository<CicloMenstrual, 
     @Query("SELECT c FROM CicloMenstrual c WHERE c.usuario = :usuario ORDER BY c.criadoEm DESC LIMIT 1")
     Optional<CicloMenstrual> findUltimoByUsuario(Usuario usuario);
 
-    List<CicloMenstrual> findByUsuarioOrderByDataInicioDesc(Usuario usuario);
+    Optional<CicloMenstrual> findByUsuarioOrderByDataInicioDesc(Usuario usuario);
 
     @Query("SELECT c FROM CicloMenstrual c WHERE c.usuario = :usuario ORDER BY c.dataInicio DESC")
     List<CicloMenstrual> findAllByUsuario(Usuario usuario);
