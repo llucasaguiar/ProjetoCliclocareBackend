@@ -31,4 +31,5 @@ public class CicloMenstrualResponse {
 	private LocalDate janelaFertilFim;
 	private LocalDate previsaoOvulacao;
 	private List<LocalDate> ciclosFuturos;
+
 }

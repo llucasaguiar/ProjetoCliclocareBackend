@@ -51,4 +51,13 @@ public class CicloMenstrual {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime criadoEm;
+
+	@Column
+	private LocalDate previsaoOvulacao;
+
+	@Column
+	private LocalDate janelaFertilInicio;
+
+	@Column
+	private LocalDate janelaFertilFim;
 }

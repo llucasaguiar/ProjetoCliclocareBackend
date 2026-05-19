@@ -25,14 +25,12 @@ import java.util.stream.Collectors;
 public class CicloMenstrualService {
 
     private final CicloMenstrualRepository cicloRepository;
-    private final UsuarioService usuarioService;
 	private final UsuarioRepository usuarioRepository;
 
     @Transactional
     public CicloMenstrualResponse criar(UUID usuarioId, CicloMenstrualRequest request) {
-        Usuario usuario = usuarioService.buscarPorEmail(
-                usuarioService.buscarPorId(usuarioId).getEmail()
-        );
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         LocalDate proximaPrevisao = request.getUltimaMenstruacao()
                 .plusDays(request.getDuracaoCiclo());
