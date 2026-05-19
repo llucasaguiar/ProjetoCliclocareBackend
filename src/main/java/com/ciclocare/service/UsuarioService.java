@@ -36,6 +36,7 @@ public class UsuarioService {
         Usuario usuario = Usuario.builder()
                 .nome(request.getNome())
                 .email(request.getEmail())
+                .dataNascimento(request.getNascimento())
                 .senha(passwordEncoder.encode(request.getSenha()))
                 .ativo(true)
                 .build();

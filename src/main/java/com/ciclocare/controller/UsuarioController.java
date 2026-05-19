@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@CrossOrigin(origins = {
+        "http://127.0.0.1:5500",
+        "http://localhost:5500"
+})
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
@@ -24,6 +28,23 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 	private final CicloMenstrualService cicloMenstrualService;
+
+    @PostMapping("/registrar")
+    public ResponseEntity<ApiResponse> registrar(
+            @Valid @RequestBody RegisterRequest request) {
+        try {
+            var usuarioCriado = usuarioService.registrar(request);
+
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(ApiResponse.sucesso("Usuário registrado com sucesso", usuarioCriado));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.erro(e.getMessage()));
+        }
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> buscarPorId(@PathVariable UUID id) {
