@@ -38,18 +38,21 @@ public class UsuarioService {
                 .ativo(true)
                 .build();
 
-		LocalDate dataInicio = request.getUltimaMenstruacao();
-		LocalDate dataFim = dataInicio.plusDays(request.getDuracaoMenstruacao() - 1);
-		LocalDate proximaPrevisao = dataInicio.plusDays(request.getDuracaoCiclo());
+		// Criar primeiro ciclo
+		var dadosCiclo = request.getDadosCiclo();
+
+		LocalDate dataInicio = request.getDadosCiclo().getDataInicio();
+		LocalDate dataFim = dataInicio.plusDays(request.getDadosCiclo().getDuracaoMenstruacao() - 1);
+		LocalDate proximaPrevisao = dataInicio.plusDays(request.getDadosCiclo().getDuracaoCiclo());
 
 		CicloMenstrual ciclo = CicloMenstrual.builder()
 				.usuario(usuario)
-				.dataInicio(dataInicio)
-				.dataFim(dataFim)
-				.proximaPrevisao(proximaPrevisao)
-				.ultimaMenstruacao(request.getUltimaMenstruacao())
-				.duracaoCiclo(request.getDuracaoCiclo())
-				.duracaoMenstruacao(request.getDuracaoMenstruacao())
+				.dataInicio(dadosCiclo.getDataInicio())
+				.dataFim(dadosCiclo.getDataFim())
+				.ultimaMenstruacao(dadosCiclo.getUltimaMenstruacao())
+				.duracaoCiclo(dadosCiclo.getDuracaoCiclo())
+				.duracaoMenstruacao(dadosCiclo.getDuracaoMenstruacao())
+				.proximaPrevisao(dadosCiclo.getUltimaMenstruacao())
 				.build();
 
 		usuario.getCiclosMenstruais().add(ciclo);

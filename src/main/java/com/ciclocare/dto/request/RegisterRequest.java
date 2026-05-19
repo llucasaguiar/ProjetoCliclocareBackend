@@ -1,5 +1,6 @@
 package com.ciclocare.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,12 +33,7 @@ public class RegisterRequest {
 	@NotNull(message = "Data de nascimento é obrigatória")
 	private LocalDate nascimento;
 
-	@NotNull(message = "Duração do ciclo é obrigatória")
-	private Integer duracaoCiclo;
-
-	@NotNull(message = "Duração da menstruação é obrigatória")
-	private Integer duracaoMenstruacao;
-
-	@NotNull(message = "Última menstruação é obrigatória")
-	private LocalDate ultimaMenstruacao;
+	@Valid
+	@NotNull(message = "Dados do ciclo são obrigatórios")
+	private CicloMenstrualRequest dadosCiclo;
 }
