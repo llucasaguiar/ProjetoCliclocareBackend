@@ -33,4 +33,6 @@ logs/
 # System files
 .DS_Store
 Thumbs.db
+
+#Hide Username/Senha database
 src/main/resources/application-local.properties
