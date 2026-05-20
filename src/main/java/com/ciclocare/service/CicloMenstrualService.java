@@ -31,18 +31,67 @@ public class CicloMenstrualService {
     public CicloMenstrualResponse criar(UUID usuarioId, CicloMenstrualRequest request) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
 				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+		int mediaDuracaoCiclo;
+		int mediaDuracaoMenstruacao;
 
-        LocalDate proximaPrevisao = request.getUltimaMenstruacao()
-                .plusDays(request.getDuracaoCiclo());
+		List<CicloMenstrual> ultimosCiclos =
+				cicloRepository.findTop3ByUsuarioOrderByDataInicioDesc(usuario);
+
+		LocalDate dataInicio = request.getDataInicio();
+
+		if (dataInicio == null) {
+			dataInicio = request.getUltimaMenstruacao();
+		}
+
+		if (dataInicio == null) {
+			throw new RuntimeException("Data de início ou última menstruação é obrigatória");
+		}
+
+		LocalDate dataFim = request.getDataFim();
+
+		if (dataFim == null) {
+			dataFim = dataInicio.plusDays(request.getDuracaoMenstruacao() - 1);
+		}
+
+		if (ultimosCiclos.isEmpty()) {
+			mediaDuracaoCiclo = request.getDuracaoCiclo();
+		} else {
+			mediaDuracaoCiclo = Math.round(
+					(float) ultimosCiclos.stream()
+							.mapToInt(CicloMenstrual::getDuracaoCiclo)
+							.average()
+							.orElse(request.getDuracaoCiclo()));
+		}
+
+		if (ultimosCiclos.isEmpty()) {
+			mediaDuracaoMenstruacao = request.getDuracaoMenstruacao();
+		} else {
+			mediaDuracaoMenstruacao = Math.round(
+					(float) ultimosCiclos.stream()
+							.mapToInt(CicloMenstrual::getDuracaoMenstruacao)
+							.average()
+							.orElse(request.getDuracaoMenstruacao())
+			);
+		}
+		LocalDate proximaPrevisao = dataInicio.plusDays(mediaDuracaoCiclo);
+
+		LocalDate previsaoOvulacao = proximaPrevisao.minusDays(14);
+
+		LocalDate janelaFertilInicio = previsaoOvulacao.minusDays(5);
+
+		LocalDate janelaFertilFim = previsaoOvulacao.plusDays(1);
 
         CicloMenstrual ciclo = CicloMenstrual.builder()
                 .usuario(usuario)
-                .dataInicio(request.getUltimaMenstruacao())
-                .dataFim(request.getUltimaMenstruacao().plusDays(request.getDuracaoMenstruacao() - 1))
-                .ultimaMenstruacao(request.getUltimaMenstruacao())
-				.duracaoCiclo(request.getDuracaoCiclo())
-				.duracaoMenstruacao(request.getDuracaoMenstruacao())
+                .dataInicio(dataInicio)
+                .dataFim(dataFim)
+                .ultimaMenstruacao(dataInicio)
+				.duracaoCiclo(mediaDuracaoCiclo)
+				.duracaoMenstruacao(mediaDuracaoMenstruacao)
                 .proximaPrevisao(proximaPrevisao)
+				.janelaFertilInicio(janelaFertilInicio)
+				.janelaFertilFim(janelaFertilFim)
+				.previsaoOvulacao(previsaoOvulacao)
                 .intensidadeFluxo(request.getIntensidadeFluxo())
                 .build();
 
@@ -126,34 +175,58 @@ public class CicloMenstrualService {
 				.orElseThrow(() ->
 						new ResourceNotFoundException("Usuária não encontrada."));
 
-		CicloMenstrual cicloAtual =
-				cicloRepository.findByUsuarioOrderByDataInicioDesc(usuaria)
-						.orElseThrow(() ->
-								new ResourceNotFoundException("Nenhum ciclo encontrado."));
+		List<CicloMenstrual> ultimosCiclos =
+				cicloRepository.findTop3ByUsuarioOrderByDataInicioDesc(usuaria);
+
+		if (ultimosCiclos.isEmpty()) {
+			throw new ResourceNotFoundException("Nenhum ciclo encontrado.");
+		}
+
+		CicloMenstrual cicloAtual = ultimosCiclos.get(0);
+
+		int mediaDuracaoCiclo = Math.round(
+				(float) ultimosCiclos.stream()
+						.mapToInt(CicloMenstrual::getDuracaoCiclo)
+						.average()
+						.orElse(28)
+		);
+
+		int mediaDuracaoMenstruacao = Math.round(
+				(float) ultimosCiclos.stream()
+						.mapToInt(CicloMenstrual::getDuracaoMenstruacao)
+						.average()
+						.orElse(5)
+		);
+
+		LocalDate ultimaMenstruacao = cicloAtual.getDataInicio();
+		LocalDate proximaPrevisao = ultimaMenstruacao.plusDays(mediaDuracaoCiclo);
+		LocalDate previsaoOvulacao = proximaPrevisao.minusDays(14);
+		LocalDate janelaFertilInicio = previsaoOvulacao.minusDays(5);
+		LocalDate janelaFertilFim = previsaoOvulacao.plusDays(1);
+
 
 		Integer diaCiclo = calcularDiaCiclo(
-				cicloAtual.getUltimaMenstruacao(),
-				cicloAtual.getDuracaoCiclo());
+				ultimaMenstruacao,
+				mediaDuracaoCiclo
+		);
 
 		FaseCiclo faseCiclo = calcularFaseAtual(
 				diaCiclo,
-				cicloAtual.getDuracaoCiclo(),
-				cicloAtual.getDuracaoMenstruacao()
+				mediaDuracaoCiclo,
+				mediaDuracaoMenstruacao
 		);
 
 		return DashboardCicloResponse.builder()
 				.diaCiclo(diaCiclo)
 				.faseCiclo(faseCiclo)
 				.mensagem(gerarMensagem(faseCiclo))
-				.ultimaMenstruacao(
-						cicloAtual.getUltimaMenstruacao()
-				)
-				.duracaoCiclo(
-						cicloAtual.getDuracaoCiclo()
-				)
-				.duracaoMenstruacao(
-						cicloAtual.getDuracaoMenstruacao()
-				)
+				.ultimaMenstruacao(ultimaMenstruacao)
+				.duracaoCiclo(mediaDuracaoCiclo)
+				.duracaoMenstruacao(mediaDuracaoMenstruacao)
+				.proximaPrevisao(proximaPrevisao)
+				.previsaoOvulacao(previsaoOvulacao)
+				.janelaFertilInicio(janelaFertilInicio)
+				.janelaFertilFim(janelaFertilFim)
 				.build();
 	}
 
