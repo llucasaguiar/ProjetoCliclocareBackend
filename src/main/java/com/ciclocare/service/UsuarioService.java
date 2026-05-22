@@ -80,7 +80,11 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         usuario.setNome(request.getNome());
+        usuario.setEmail(request.getEmail());
+        usuario.setDataNascimento(request.getDataNascimento());
+
         Usuario usuarioAtualizado = usuarioRepository.save(usuario);
+
         return mapToResponse(usuarioAtualizado);
     }
 
@@ -96,6 +100,7 @@ public class UsuarioService {
                 .id(usuario.getId())
                 .nome(usuario.getNome())
                 .email(usuario.getEmail())
+                .dataNascimento(usuario.getDataNascimento())
                 .dataCriacao(usuario.getDataCriacao())
                 .ultimaAtualizacao(usuario.getUltimaAtualizacao())
                 .ativo(usuario.getAtivo())
