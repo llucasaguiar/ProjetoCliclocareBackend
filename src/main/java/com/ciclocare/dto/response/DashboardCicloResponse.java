@@ -19,6 +19,8 @@ public class DashboardCicloResponse {
 	private LocalDate ultimaMenstruacao;
 	private Integer duracaoCiclo;
 	private Integer duracaoMenstruacao;
-	private LocalDate proximaMenstruacao;
-	private LocalDate ovulacao;
+	private LocalDate proximaPrevisao;
+	private LocalDate previsaoOvulacao;
+	private LocalDate janelaFertilInicio;
+	private LocalDate janelaFertilFim;
 }

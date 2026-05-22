@@ -45,18 +45,18 @@ public class UsuarioService {
 		// Criar primeiro ciclo
 		var dadosCiclo = request.getDadosCiclo();
 
-		LocalDate dataInicio = request.getDadosCiclo().getDataInicio();
-		LocalDate dataFim = dataInicio.plusDays(request.getDadosCiclo().getDuracaoMenstruacao() - 1);
-		LocalDate proximaPrevisao = dataInicio.plusDays(request.getDadosCiclo().getDuracaoCiclo());
+		LocalDate dataInicio = dadosCiclo.getUltimaMenstruacao();
+		LocalDate dataFim = dataInicio.plusDays(dadosCiclo.getDuracaoMenstruacao() - 1);
+		LocalDate proximaPrevisao = dataInicio.plusDays(dadosCiclo.getDuracaoCiclo());
 
 		CicloMenstrualRequest cicloMenstrualRequest = CicloMenstrualRequest.builder()
-				.dataInicio(request.getDadosCiclo().getDataInicio())
-				.dataFim(request.getDadosCiclo().getDataFim())
-				.ultimaMenstruacao(request.getDadosCiclo().getUltimaMenstruacao())
-				.duracaoCiclo(request.getDadosCiclo().getDuracaoCiclo())
-				.duracaoMenstruacao(request.getDadosCiclo().getDuracaoMenstruacao())
-				.proximaPrevisao(request.getDadosCiclo().getProximaPrevisao())
-				.intensidadeFluxo(request.getDadosCiclo().getIntensidadeFluxo())
+				.dataInicio(dadosCiclo.getDataInicio())
+				.dataFim(dadosCiclo.getDataFim())
+				.ultimaMenstruacao(dadosCiclo.getUltimaMenstruacao())
+				.duracaoCiclo(dadosCiclo.getDuracaoCiclo())
+				.duracaoMenstruacao(dadosCiclo.getDuracaoMenstruacao())
+				.proximaPrevisao(dadosCiclo.getProximaPrevisao())
+				.intensidadeFluxo(dadosCiclo.getIntensidadeFluxo())
 				.build();
 
 		cicloMenstrualService.criar(usuario.getId(), cicloMenstrualRequest);

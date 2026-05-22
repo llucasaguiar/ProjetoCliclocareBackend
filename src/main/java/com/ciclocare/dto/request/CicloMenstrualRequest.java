@@ -1,5 +1,6 @@
 package com.ciclocare.dto.request;
 
+import com.ciclocare.enums.FaseCiclo;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,9 +21,7 @@ import java.util.UUID;
 @Builder
 public class CicloMenstrualRequest {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID idCiclo;
+	// private UUID idCiclo; -> desnecessário, pois o banco ainda nao existe
 
     @NotNull(message = "Duração do ciclo é obrigatória")
     @Min(value = 20, message = "Duração do ciclo deve ser mínimo 20 dias")
@@ -35,14 +34,11 @@ public class CicloMenstrualRequest {
     @NotNull(message = "Última menstruação é obrigatória")
     private LocalDate ultimaMenstruacao;
 
-	@NotNull(message = "Data de início é obrigatória")
 	private LocalDate dataInicio;
 
-	@NotNull(message = "Data de término é obrigatória")
 	private LocalDate dataFim;
 
 	private LocalDate proximaPrevisao;
-
 
 	private String intensidadeFluxo;
 
